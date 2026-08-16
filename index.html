@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VPN Service — Выберите тариф</title>
+    <style>
+        :root {
+            --bg: #0f0f1a;
+            --card-bg: #1a1a2e;
+            --card-border: #2a2a4a;
+            --text: #f0f0f5;
+            --text-muted: #9a9ab0;
+            --accent: #6c5ce7;
+            --accent-gradient: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            --input-bg: #12121f;
+            --input-border: #2e2e4a;
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: 0.25s ease;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            background-image: radial-gradient(circle at 20% 20%, rgba(108, 92, 231, 0.08), transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(162, 155, 254, 0.06), transparent 50%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: var(--text);
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            font-size: 36px;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+        .header p {
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .plan-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 28px 22px;
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .plan-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: var(--shadow);
+        }
+        .plan-card.popular {
+            border-color: var(--accent);
+            box-shadow: 0 8px 30px rgba(108, 92, 231, 0.3);
+        }
+        .plan-card.popular::before {
+            content: 'Популярный';
+            position: absolute;
+            top: 12px;
+            right: -30px;
+            background: var(--accent);
+            color: #fff;
+            font-size: 11px;
+            padding: 5px 30px;
+            transform: rotate(45deg);
+        }
+        .plan-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .plan-price {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 16px;
+        }
+        .plan-price span {
+            font-size: 16px;
+            color: var(--text-muted);
+        }
+        .plan-features {
+            list-style: none;
+            margin-bottom: 20px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        .plan-features li {
+            margin: 6px 0;
+        }
+        .select-btn {
+            display: inline-block;
+            padding: 12px 28px;
+            background: var(--accent-gradient);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+        .select-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.4);
+        }
+        @media (max-width: 600px) {
+            .pricing-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>VPN Service</h1>
+            <p>Безлимитный трафик · Высокая скорость · Все устройства</p>
+        </div>
+        <div class="pricing-grid">
+            <div class="plan-card">
+                <div class="plan-name">1 месяц</div>
+                <div class="plan-price">199 ₽ <span>/мес</span></div>
+                <ul class="plan-features">
+                    <li>Безлимитный трафик</li>
+                    <li>5 устройств</li>
+                    <li>Все локации</li>
+                </ul>
+                <a href="payment.html?amount=199&plan=1month" class="select-btn">Выбрать</a>
+            </div>
+            <div class="plan-card popular">
+                <div class="plan-name">3 месяца</div>
+                <div class="plan-price">499 ₽ <span>/3 мес</span></div>
+                <ul class="plan-features">
+                    <li>Безлимитный трафик</li>
+                    <li>10 устройств</li>
+                    <li>Все локации + Double VPN</li>
+                </ul>
+                <a href="payment.html?amount=499&plan=3months" class="select-btn">Выбрать</a>
+            </div>
+            <div class="plan-card">
+                <div class="plan-name">6 месяцев</div>
+                <div class="plan-price">899 ₽ <span>/6 мес</span></div>
+                <ul class="plan-features">
+                    <li>Безлимитный трафик</li>
+                    <li>15 устройств</li>
+                    <li>Все локации + Double VPN + AdBlock</li>
+                </ul>
+                <a href="payment.html?amount=899&plan=6months" class="select-btn">Выбрать</a>
+            </div>
+            <div class="plan-card">
+                <div class="plan-name">12 месяцев</div>
+                <div class="plan-price">1499 ₽ <span>/год</span></div>
+                <ul class="plan-features">
+                    <li>Безлимитный трафик</li>
+                    <li>Без ограничений устройств</li>
+                    <li>Все функции + приоритетная поддержка</li>
+                </ul>
+                <a href="payment.html?amount=1499&plan=12months" class="select-btn">Выбрать</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

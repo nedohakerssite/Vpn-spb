@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оплата VPN — СБП</title>
+    <style>
+        :root {
+            --bg: #0f0f1a;
+            --card-bg: #1a1a2e;
+            --card-border: #2a2a4a;
+            --text: #f0f0f5;
+            --text-muted: #9a9ab0;
+            --accent: #6c5ce7;
+            --accent-gradient: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            --success: #00b894;
+            --danger: #ff7675;
+            --input-bg: #12121f;
+            --input-border: #2e2e4a;
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: 0.25s ease;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            background-image: radial-gradient(circle at 20% 20%, rgba(108, 92, 231, 0.08), transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(162, 155, 254, 0.06), transparent 50%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: var(--text);
+        }
+        .payment-container {
+            width: 100%;
+            max-width: 460px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 32px 28px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        .payment-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: var(--accent-gradient);
+        }
+        .screen {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .screen.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .amount-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .amount-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .amount-header p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        .amount-box {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .amount-box .label {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        .amount-box .value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        .sbp-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: var(--radius-sm);
+            margin-bottom: 24px;
+        }
+        .sbp-info .icon { font-size: 26px; }
+        .sbp-info .text { font-weight: 600; }
+        .sbp-info .subtext { font-size: 12px; color: var(--text-muted); }
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent-gradient);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(108, 92, 231, 0.4);
+        }
+        .btn:active { transform: translateY(0); }
+        .btn-secondary {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-muted);
+            margin-top: 12px;
+        }
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--text);
+            background: rgba(108, 92, 231, 0.05);
+            box-shadow: none;
+            transform: none;
+        }
+        .bank-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .bank-header h1 {
+            font-size: 22px;
+            font-weight: 700;
+        }
+        .bank-header p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        .order-summary {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .order-summary .amount {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        .order-summary .desc {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        .bank-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .bank-btn {
+            background: var(--input-bg);
+            border: 1.5px solid var(--input-border);
+            border-radius: var(--radius-sm);
+            padding: 14px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .bank-btn:hover {
+            border-color: var(--accent);
+            background: rgba(108, 92, 231, 0.05);
+        }
+        .bank-btn .bank-logo { font-size: 26px; }
+        .back-link {
+            display: block;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .back-link:hover { color: var(--text); }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.visible { display: flex; }
+        .modal {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 28px;
+            max-width: 360px;
+            width: 100%;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        .modal .spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .modal h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        .modal p {
+            color: var(--text-muted);
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <!-- Экран 1: сумма -->
+        <div class="screen active" id="screen-amount">
+            <div class="amount-header">
+                <h1>Оплата заказа</h1>
+                <p>Только через Систему быстрых платежей (СБП)</p>
+            </div>
+            <div class="amount-box">
+                <div class="label">Сумма к оплате</div>
+                <div class="value" id="amountValue">0 ₽</div>
+            </div>
+            <div class="sbp-info">
+                <span class="icon">⚡</span>
+                <div>
+                    <div class="text">Оплата через СБП</div>
+                    <div class="subtext">Выберите банк на следующем шаге</div>
+                </div>
+            </div>
+            <button class="btn" id="toBankBtn">Перейти к оплате СБП</button>
+            <button class="btn btn-secondary" onclick="window.location.href='index.html'">← Вернуться к тарифам</button>
+        </div>
+
+        <!-- Экран 2: выбор банка -->
+        <div class="screen" id="screen-bank">
+            <div class="bank-header">
+                <h1>Выберите банк для оплаты</h1>
+                <p>Оплата через СБП — безопасно и быстро</p>
+            </div>
+            <div class="order-summary">
+                <div class="amount" id="bankAmount">0 ₽</div>
+                <div class="desc" id="bankDescription">Оплата VPN</div>
+            </div>
+            <div class="bank-grid">
+                <button class="bank-btn" data-bank="СберБанк" data-url="https://online.sberbank.ru/">
+                    <span class="bank-logo">🏦</span>
+                    СберБанк
+                </button>
+                <button class="bank-btn" data-bank="Т-Банк (Тинькофф)" data-url="https://www.tbank.ru/">
+                    <span class="bank-logo">💳</span>
+                    Т-Банк
+                </button>
+                <button class="bank-btn" data-bank="ВТБ" data-url="https://online.vtb.ru/">
+                    <span class="bank-logo">🏛️</span>
+                    ВТБ
+                </button>
+                <button class="bank-btn" data-bank="Альфа-Банк" data-url="https://click.alfabank.ru/">
+                    <span class="bank-logo">🅰️</span>
+                    Альфа-Банк
+                </button>
+                <button class="bank-btn" data-bank="Газпромбанк" data-url="https://online.gazprombank.ru/">
+                    <span class="bank-logo">⛽</span>
+                    Газпромбанк
+                </button>
+                <button class="bank-btn" data-bank="Райффайзен Банк" data-url="https://online.raiffeisen.ru/">
+                    <span class="bank-logo">🏦</span>
+                    Райффайзен
+                </button>
+                <button class="bank-btn" data-bank="ПСБ" data-url="https://online.psbank.ru/">
+                    <span class="bank-logo">🏦</span>
+                    ПСБ
+                </button>
+                <button class="bank-btn" data-bank="Банк Открытие" data-url="https://www.open.ru/">
+                    <span class="bank-logo">🔓</span>
+                    Открытие
+                </button>
+                <button class="bank-btn" data-bank="Почта Банк" data-url="https://my.pochtabank.ru/">
+                    <span class="bank-logo">📮</span>
+                    Почта Банк
+                </button>
+                <button class="bank-btn" data-bank="Озон Банк" data-url="https://ozonbank.ru/">
+                    <span class="bank-logo">🛒</span>
+                    Озон Банк
+                </button>
+            </div>
+            <div class="back-link" id="backToAmount">← Назад к оплате</div>
+        </div>
+    </div>
+
+    <!-- Модальное окно -->
+    <div class="modal-overlay" id="transitionModal">
+        <div class="modal">
+            <div class="spinner"></div>
+            <h2>Перенаправляем...</h2>
+            <p id="transitionText">Вы будете перенаправлены в банк для завершения оплаты.</p>
+        </div>
+    </div>
+
+    <script>
+        // Получаем параметры из URL
+        const params = new URLSearchParams(window.location.search);
+        const amount = Number(params.get('amount')) || 0;
+        const plan = params.get('plan') || 'vpn';
+
+        const amountValue = document.getElementById('amountValue');
+        const bankAmount = document.getElementById('bankAmount');
+        const bankDescription = document.getElementById('bankDescription');
+        const formattedAmount = amount.toLocaleString('ru-RU') + ' ₽';
+
+        if (amount > 0) {
+            amountValue.textContent = formattedAmount;
+            bankAmount.textContent = formattedAmount;
+            bankDescription.textContent = 'Оплата VPN (' + plan + ')';
+        } else {
+            amountValue.textContent = 'Сумма не указана';
+            document.getElementById('toBankBtn').disabled = true;
+            document.getElementById('toBankBtn').style.opacity = '0.6';
+        }
+
+        // Переключение экранов
+        const screenAmount = document.getElementById('screen-amount');
+        const screenBank = document.getElementById('screen-bank');
+        const toBankBtn = document.getElementById('toBankBtn');
+        const backToAmount = document.getElementById('backToAmount');
+
+        toBankBtn.addEventListener('click', () => {
+            screenAmount.classList.remove('active');
+            screenBank.classList.add('active');
+        });
+
+        backToAmount.addEventListener('click', () => {
+            screenBank.classList.remove('active');
+            screenAmount.classList.add('active');
+        });
+
+        // Обработка выбора банка
+        const bankButtons = document.querySelectorAll('.bank-btn');
+        const modal = document.getElementById('transitionModal');
+        const transitionText = document.getElementById('transitionText');
+
+        bankButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const bankName = btn.getAttribute('data-bank');
+                const bankUrl = btn.getAttribute('data-url');
+
+                transitionText.textContent = `Открываем ${bankName} для оплаты...`;
+                modal.classList.add('visible');
+
+                setTimeout(() => {
+                    modal.classList.remove('visible');
+                    if (bankUrl) {
+                        window.open(bankUrl, '_blank');
+                    } else {
+                        alert(`Ссылка для ${bankName} не настроена`);
+                    }
+                }, 800);
+            });
+        });
+    </script>
+</body>
+</html>
